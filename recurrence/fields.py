@@ -1,3 +1,6 @@
+import pdb
+import traceback
+
 from django.db.models import fields
 from django.utils.six import string_types
 import recurrence
@@ -26,15 +29,22 @@ class RecurrenceField(fields.Field):
         return 'TextField'
 
     def to_python(self, value):
+        print('topython', value)
+        traceback.print_stack()
         if value is None or isinstance(value, recurrence.Recurrence):
             return value
         value = super(RecurrenceField, self).to_python(value) or u''
         return recurrence.deserialize(value, self.include_dtstart)
 
     def from_db_value(self, value, *args, **kwargs):
+        print('fromdbvalue', value)
+        if value == '':
+            # Backwards compatible fix, for when we used to save empty recurrences as empty strings and not null
+            return None
         return self.to_python(value)
 
     def get_prep_value(self, value):
+        print('getprepval', value)
         if not isinstance(value, string_types):
             value = recurrence.serialize(value)
         return value

@@ -8,3 +8,7 @@ class EventWithNoNulls(models.Model):
 
 class EventWithNulls(models.Model):
     recurs = RecurrenceField(null=True)
+
+
+class EventWithNullAndBlank(models.Model):
+    recurs = RecurrenceField(null=True, blank=True)
